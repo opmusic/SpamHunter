@@ -101,11 +101,11 @@ class TweetParser:
                     continue
                 for data in info['data']:
                     if ('attachments' in data):
-                        month = parser.parse(data['created_at']).strftime('%Y-%m')
+                        #month = parser.parse(data['created_at']).strftime('%Y-%m')
                         for key in data['attachments']['media_keys']:
                             if (key in keys_info and key not in self.media_info):
                                 url = keys_info[key]
-                                self.media_info[url] = {'media_url': url, 'month': month, 'tweet_id': data['id']}
+                                self.media_info[url] = {'media_url': url, 'created_at': data['created_at'], 'tweet_id': data['id']}
 
         print("%d image urls extracted from tweets" % (len(keys_info)))
 
@@ -122,9 +122,9 @@ class TweetParser:
                 if ('data' not in info):
                     continue
                 for data in info['data']:
-                    month = parser.parse(data['created_at']).strftime('%Y-%m')
+                    #month = parser.parse(data['created_at']).strftime('%Y-%m')
                     tweet_id = data['id']
-                    self.tweet_info[tweet_id] = {'tweet_id': tweet_id, 'month': month, 'author_id': data['author_id'],
+                    self.tweet_info[tweet_id] = {'tweet_id': tweet_id, 'created_at': data['created_at'], 'author_id': data['author_id'],
                                                  'conversation_id': data['conversation_id'], 'source': data['source'],
                                                  'text': data['text']}
 

@@ -49,12 +49,12 @@ class SpamHunter:
                     sms_boxes = self.smsDetector.detect_sms(imgpath, None)
                     tweet_text = self.tweet_info[info['tweet_id']]['text']
                     tweet_label = self.tweetDetector.detect_tweet_text(tweet_text)
-                    month = info['month']
+
                     if (sms_boxes):
                         sms_text = extract_sms_text(imgpath, sms_boxes)
-                        info = {'image_name': imgname, 'image_path': imgpath, 'month': month, 'sms_label': True, 'sms_text': sms_text, 'tweet_label': tweet_label}
+                        info = {'image_name': imgname, 'image_path': imgpath, 'created_at': info['created_at'], 'sms_label': True, 'sms_text': sms_text, 'tweet_label': tweet_label}
                     else:
-                        info = {'image_name': imgname, 'image_path': imgpath, 'month': month, 'sms_label': False, 'tweet_label': tweet_label}
+                        info = {'image_name': imgname, 'image_path': imgpath, 'created_at': info['created_at'], 'sms_label': False, 'tweet_label': tweet_label}
                     f.write(json.dumps(info) + '\n')
 
 if __name__ == '__main__':
