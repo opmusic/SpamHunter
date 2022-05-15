@@ -10,7 +10,7 @@
   ## Settings
   specify the following parameters in config/settings.py
    * bearer_token : Twitter API token
-   * twitterfile: file to store the original crawled tweet informaion
+   * twitterfolder: folder to store the original crawled tweet informaion
    * imgfolder: folder to store all images downloaded from tweet attachments
    * resfile: store the detection results
    * start_time: default 1 day before the current time (UTC time)
