@@ -4,16 +4,17 @@ from detect_tweet_text import TweetDetector
 from extract_sms_text import extract_sms_text
 from datetime import datetime, timezone, timedelta
 
+from configs import settings
 import os,json
 
 class SpamHunter:
 
-    def __init__(self, start_time, end_time, resfile):
+    def __init__(self, start_time, end_time):
         self.start_time = start_time
         self.end_time = end_time
-        self.twitterfile = 'data/tweet_'+end_time+'.json'
-        self.imgfolder = 'data/images/2022-05'
-        self.resfile = resfile
+        self.twitterfile = os.path.join(settings.twitterfolder, 'tweet_'+end_time+'.json')
+        self.imgfolder = settings.imgfolder
+        self.resfile = settings.resfile
 
         self.tweetParser : TweetParser = TweetParser(self.twitterfile, self.imgfolder, mode = 'recent')
         self.smsDetector: SMSDetector = SMSDetector()
@@ -57,7 +58,13 @@ class SpamHunter:
                     f.write(json.dumps(info) + '\n')
 
 if __name__ == '__main__':
-    end_time = datetime.now(timezone.utc)
-    start_time = end_time - timedelta(days = 1)
-    spamhunter =SpamHunter(start_time.strftime('%Y-%m-%dT%HZ'), end_time.strftime('%Y-%m-%dT%HZ'), 'data/detect_results.json')
+    if (settings.end_time):
+        end_time = settings.end_time
+    else:
+        end_time = datetime.now(timezone.utc)
+    if (settings.start_time):
+        start_time = settings.start_time
+    else:
+        start_time = end_time - timedelta(days = 1)
+    spamhunter =SpamHunter(start_time.strftime('%Y-%m-%dT%HZ'), end_time.strftime('%Y-%m-%dT%HZ'))
     spamhunter.detect()
