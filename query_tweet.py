@@ -12,7 +12,8 @@ class TweetParser:
 
     def __init__(self, tweetfile = None, imgfolder=None, mode = 'recent'):
         self.bearer_token = settings.bearer_token
-        self.keywords = ['malicious', 'spam', 'phish', 'phishing', 'smish', 'scam', 'fraud']
+        #self.keywords = ['malicious', 'spam', 'phish', 'phishing', 'smish', 'scam', 'fraud']
+        self.keywords = ['malicious', 'phish', 'smish', 'phishing', 'scam','fraud']
         archive_url = "https://api.twitter.com/2/tweets/search/all"
         recent_url = "https://api.twitter.com/2/tweets/search/recent"
         self.mode = mode

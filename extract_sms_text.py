@@ -1,5 +1,8 @@
 import cv2
 import pytesseract
+import re
+import url_regex
+#from langdetect import detect_langs
 
 def is_overlap(box1, box2):
     x1, y1, w1, h1 = box1
@@ -38,5 +41,29 @@ def extract_sms_text(imgpath, boxes):
         all_text.append(text)
     return all_text
 
-#imgpath = 'data/images/2022-05/FSUKKe6WYAEQlBH.jpg'
-#print(ocr(imgpath, [179, 36, 865, 197]))
+
+def extract_all_text(imgpath):
+    img = cv2.imread(imgpath)
+
+    config = r'-l eng+osd+snum --psm 6'
+    txt = pytesseract.image_to_string(img, config=config)
+
+    return txt
+
+def extract_url_from_text(text):
+    text = re.sub('([-/?&])\n',lambda x: x.group(1), text)
+    text = re.sub('\n([-/.?&])', lambda x: x.group(1), text)
+
+    urls = set()
+    r = url_regex.UrlRegex(text)
+    for t in r.links:
+        check = url_regex.UrlRegex(t.full, strict=True, real_tld=True)
+        if check.detect == True:
+            urls.add(t.full)
+
+    return list(urls)
+
+imgpath = 'data/images/2022-05/FSaPx6PXsAAx7zQ.jpg'
+text = extract_all_text(imgpath)
+print(text)
+print(extract_url_from_text(text))

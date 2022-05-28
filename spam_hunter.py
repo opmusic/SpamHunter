@@ -1,7 +1,7 @@
 from query_tweet import TweetParser
 from detect_sms_img import SMSDetector
 from detect_tweet_text import TweetDetector
-from extract_sms_text import extract_sms_text
+from extract_sms_text import *
 from datetime import datetime, timezone, timedelta
 
 from configs import settings
@@ -51,8 +51,10 @@ class SpamHunter:
                     tweet_label = self.tweetDetector.detect_tweet_text(tweet_text)
 
                     if (sms_boxes):
-                        sms_text = extract_sms_text(imgpath, sms_boxes)
-                        info = {'image_name': imgname, 'image_path': imgpath, 'created_at': info['created_at'], 'sms_label': True, 'sms_text': sms_text, 'tweet_label': tweet_label}
+                        #sms_text = extract_all_text(imgpath, sms_boxes)
+                        all_text = extract_all_text(imgpath)
+                        urls = extract_url_from_text(all_text)
+                        info = {'image_name': imgname, 'image_path': imgpath, 'created_at': info['created_at'], 'sms_label': True, 'sms_text': all_text, 'urls': urls, 'tweet_label': tweet_label}
                     else:
                         info = {'image_name': imgname, 'image_path': imgpath, 'created_at': info['created_at'], 'sms_label': False, 'tweet_label': tweet_label}
                     f.write(json.dumps(info) + '\n')
