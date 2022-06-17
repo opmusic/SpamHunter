@@ -3,8 +3,8 @@
   
   ## How to install
   You should install allennlp, nltk, tesseract manually to use the specified NLP models and OCR tool.
-  allennlp: https://github.com/allenai/allennlp
-  tesseract: https://tesseract-ocr.github.io/tessdoc/Installation.html
+  * allennlp: https://github.com/allenai/allennlp
+  * tesseract: https://tesseract-ocr.github.io/tessdoc/Installation.html
   
   ## How to run
   <pre> python spam_hunter.py</pre>
