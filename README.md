@@ -4,6 +4,7 @@
   ## How to install
   You should install allennlp, nltk, tesseract manually to use the specified NLP models and OCR tool.
   * allennlp: https://github.com/allenai/allennlp
+  * nltk: https://www.nltk.org/install.html
   * tesseract: https://tesseract-ocr.github.io/tessdoc/Installation.html
   
   ## How to run
