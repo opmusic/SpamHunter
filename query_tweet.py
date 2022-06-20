@@ -145,8 +145,23 @@ class TweetParser:
                             self.user_info[uid] = {'id': uid, 'name': item['name'], 'username': item['username'],
                                                    'public_metrics': item['public_metrics']}
 
-    def download_imgs(self):
+    def download_imgs_wget(self):
         if not os.path.exists(self.imgfolder):
             os.mkdir(self.imgfolder)
         for url in self.media_urls:
             os.popen('wget '+url+' -nc -q -P '+ self.imgfolder)
+
+    def download_imgs(self):
+        if not os.path.exists(self.imgfolder):
+            os.mkdir(self.imgfolder)
+        for url in self.media_urls:
+            try:
+                r = requests.get(url, stream=True)
+                if (r.status_code == 200):
+                    imgname = url.split('/')[-1]
+                    imgpath = os.path.join(self.imgfolder, imgname)
+                    with open(imgpath,'wb') as f:
+                        for chunk in r:
+                            f.write(chunk)
+            except:
+                print('error when downloading image: '+url)
