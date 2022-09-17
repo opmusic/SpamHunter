@@ -55,6 +55,7 @@ class TweetDetector:
     def detect_tweet_text(self, tweet_text):
         # remove tweet url
         tweet_text = re.sub(r'http[s]?://t\.co/[0-9a-zA-z]+', '', tweet_text)
+
         # remove noise
         clean_tweet_text = self.tokenize(tweet_text)
         # classify

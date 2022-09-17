@@ -2,6 +2,7 @@ from query_tweet import TweetParser
 from detect_sms_img import SMSDetector
 from detect_tweet_text import TweetDetector
 from extract_sms_text import *
+from google_api import google_translate
 from datetime import datetime, timezone, timedelta
 
 from configs import settings
@@ -13,12 +14,19 @@ class SpamHunter:
         self.start_time = start_time
         self.end_time = end_time
         self.twitterfile = os.path.join(settings.twitterfolder, 'tweet_'+end_time+'.json')
+
+        #load settings
+        self.twitter_mode = settings.twitter_mode
         self.imgfolder = settings.imgfolder
         self.resfile = settings.resfile
 
-        self.tweetParser : TweetParser = TweetParser(self.twitterfile, self.imgfolder, mode = 'recent')
+        self.enable_tweet_detect = settings.enable_tweet_detect
+        self.enable_google_api = settings.enable_google_api
+
+        self.tweetParser : TweetParser = TweetParser(self.twitterfile, self.imgfolder, mode = self.twitter_mode)
         self.smsDetector: SMSDetector = SMSDetector()
-        self.tweetDetector: TweetDetector = TweetDetector()
+        if (self.enable_tweet_detect):
+            self.tweetDetector: TweetDetector = TweetDetector()
         self.tweet_info = {}
         self.image_info = {}
 
@@ -47,26 +55,47 @@ class SpamHunter:
                 imgpath = os.path.join(self.imgfolder, imgname)
                 if (os.path.exists(imgpath) and imgname not in detected_info):
                     sms_boxes = self.smsDetector.detect_sms(imgpath, None)
-                    tweet_text = self.tweet_info[info['tweet_id']]['text']
-                    tweet_label = self.tweetDetector.detect_tweet_text(tweet_text)
 
-                    if (sms_boxes):
-                        #sms_text = extract_all_text(imgpath, sms_boxes)
+                    # enable tweet_detect
+                    if (self.enable_tweet_detect):
+                        tweet_text = self.tweet_info[info['tweet_id']]['text']
+                        tweet_lang = self.tweet_info[info['tweet_id']]['lang']
+
+                        # translate tweet text
+                        if (tweet_lang != 'en' and self.enable_google_api):
+                            tweet_text = google_translate(tweet_text)
+
+                        tweet_label = self.tweetDetector.detect_tweet_text(tweet_text)
+                    else:
+                        tweet_label = True
+
+                    if (sms_boxes and tweet_label > 0.5):
+                        #extract urls
                         all_text = extract_all_text(imgpath)
                         urls = extract_url_from_text(all_text)
-                        info = {'image_name': imgname, 'image_path': imgpath, 'created_at': info['created_at'], 'sms_label': True, 'sms_text': all_text, 'urls': urls, 'tweet_label': tweet_label}
+
+                        #extract sms text
+                        if (self.enable_google_api):
+                            sms_text = extract_sms_text_google(imgpath, sms_boxes)
+                        else:
+                            sms_text = extract_sms_text(imgpath, sms_boxes)
+
+                        info = {'image_name': imgname, 'image_path': imgpath, 'created_at': info['created_at'], 'sms_label': len(sms_boxes) != 0, 'sms_text': sms_text, 'urls': urls, 'tweet_label': tweet_label}
                     else:
-                        info = {'image_name': imgname, 'image_path': imgpath, 'created_at': info['created_at'], 'sms_label': False, 'tweet_label': tweet_label}
+                        info = {'image_name': imgname, 'image_path': imgpath, 'created_at': info['created_at'], 'sms_label': len(sms_boxes) != 0, 'tweet_label': tweet_label}
                     f.write(json.dumps(info) + '\n')
 
 if __name__ == '__main__':
+    #load end_time and start_time
+    end_time = datetime.now(timezone.utc)
+    start_time = end_time - timedelta(days=1)
+
+    start_time = start_time.strftime('%Y-%m-%dT%HZ')
+    end_time = end_time.strftime('%Y-%m-%dT%HZ')
+
     if (settings.end_time):
         end_time = settings.end_time
-    else:
-        end_time = datetime.now(timezone.utc)
     if (settings.start_time):
         start_time = settings.start_time
-    else:
-        start_time = end_time - timedelta(days = 1)
-    spamhunter =SpamHunter(start_time.strftime('%Y-%m-%dT%HZ'), end_time.strftime('%Y-%m-%dT%HZ'))
+    spamhunter =SpamHunter(start_time, end_time)
     spamhunter.detect()

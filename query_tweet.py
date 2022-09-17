@@ -7,13 +7,12 @@ import argparse
 import requests
 from configs import settings
 
-
 class TweetParser:
 
     def __init__(self, tweetfile = None, imgfolder=None, mode = 'recent'):
         self.bearer_token = settings.bearer_token
-        #self.keywords = ['malicious', 'spam', 'phish', 'phishing', 'smish', 'scam', 'fraud']
-        self.keywords = ['malicious', 'phish', 'smish', 'phishing', 'scam','fraud']
+        self.keywords = ['malicious', 'spam', 'phish', 'phishing', 'smish', 'scam', 'fraud']
+        #self.keywords = ['malicious', 'phish', 'smish', 'phishing', 'scam','fraud']
         archive_url = "https://api.twitter.com/2/tweets/search/all"
         recent_url = "https://api.twitter.com/2/tweets/search/recent"
         self.mode = mode
@@ -127,7 +126,7 @@ class TweetParser:
                     tweet_id = data['id']
                     self.tweet_info[tweet_id] = {'tweet_id': tweet_id, 'created_at': data['created_at'], 'author_id': data['author_id'],
                                                  'conversation_id': data['conversation_id'], 'source': data['source'],
-                                                 'text': data['text']}
+                                                 'lang': data['lang'], 'text': data['text']}
 
     def parsr_user_info(self):
         if (os.path.exists(self.tweetfile)):

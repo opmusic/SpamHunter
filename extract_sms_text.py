@@ -2,7 +2,8 @@ import cv2
 import pytesseract
 import re
 import url_regex
-#from langdetect import detect_langs
+
+from google_api import detect_sms_para
 
 def is_overlap(box1, box2):
     x1, y1, w1, h1 = box1
@@ -19,8 +20,8 @@ def is_overlap(box1, box2):
         box_area = w2 * h2
         overlap_area = (min(x1+w1, p1+w2) - max(x1, p1)) * (min(y1+h1, q1+h2) - max(y1, q1))
         # print(overlap_area/text_area)
-        # if (overlap_area/text_area > 0.75):
-        #    return True
+        if (overlap_area/text_area > 0.75):
+            return True
 
     return (x_tag & y_tag)
 
@@ -34,13 +35,24 @@ def extract_sms_text(imgpath, boxes):
         text = ''
         for i in range(n_boxes):
             (x, y, w, h) = (d['left'][i], d['top'][i], d['width'][i], d['height'][i])
-            if is_overlap(box, (x,y,w,h)):
-                if (d['text'][i].strip()):
-                    text += d['text'][i].strip()
-                    text += ' '
+            if is_overlap((x,y,w,h), box):
+                if (len(d['text'][i].strip().split()) > 6):
+                    text += d['text'][i]
         all_text.append(text)
     return all_text
 
+def extract_sms_text_google(imgpath, boxes):
+    para_boxes = detect_sms_para(imgpath)
+
+    all_text = []
+    for box in boxes:
+        text = ''
+        for info in para_boxes:
+            if is_overlap(info['box'], box):
+                if (len(info['text'].strip().split()) > 6):
+                    text += info['text']
+        all_text.append(text)
+    return all_text
 
 def extract_all_text(imgpath):
     img = cv2.imread(imgpath)
@@ -62,8 +74,3 @@ def extract_url_from_text(text):
             urls.add(t.full)
 
     return list(urls)
-
-imgpath = 'data/images/2022-05/FSaPx6PXsAAx7zQ.jpg'
-text = extract_all_text(imgpath)
-print(text)
-print(extract_url_from_text(text))

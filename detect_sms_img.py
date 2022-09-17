@@ -71,7 +71,7 @@ class SMSDetector:
             #return [{'bound': b_boxes[index], 'conf': confidences[index]} for index in indices]
             # return [b_boxes[index] for index in indices]
 
-        return None
+        return []
 
     def draw_bounding_box(self, img, classes, b_boxes, outpath):
         colors = np.random.uniform(0, 255, size=(20, 3))
@@ -79,8 +79,7 @@ class SMSDetector:
         for index in range(len(classes)):
             x, y, w, h = b_boxes[index]
             cv2.rectangle(img, (x, y), (x + w, y + h), colors[index], 2)
-            cv2.putText(img, classes[index], (x + 5, y + 20), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, colors[index],
-                        2)
+            cv2.putText(img, classes[index], (x + 5, y + 20), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, colors[index], 2)
 
         cv2.imwrite(outpath, img)
 
