@@ -55,19 +55,18 @@ class SpamHunter:
                 imgpath = os.path.join(self.imgfolder, imgname)
                 if (os.path.exists(imgpath) and imgname not in detected_info):
                     sms_boxes = self.smsDetector.detect_sms(imgpath, None)
+                    tweet_label = True
+                    if (sms_boxes):
+                        # enable tweet_detect
+                        if (self.enable_tweet_detect):
+                            tweet_text = self.tweet_info[info['tweet_id']]['text']
+                            tweet_lang = self.tweet_info[info['tweet_id']]['lang']
 
-                    # enable tweet_detect
-                    if (self.enable_tweet_detect):
-                        tweet_text = self.tweet_info[info['tweet_id']]['text']
-                        tweet_lang = self.tweet_info[info['tweet_id']]['lang']
+                            # translate tweet text
+                            if (tweet_lang != 'en' and self.enable_google_api):
+                                tweet_text = google_translate(tweet_text)
 
-                        # translate tweet text
-                        if (tweet_lang != 'en' and self.enable_google_api):
-                            tweet_text = google_translate(tweet_text)
-
-                        tweet_label = self.tweetDetector.detect_tweet_text(tweet_text)
-                    else:
-                        tweet_label = True
+                            tweet_label = self.tweetDetector.detect_tweet_text(tweet_text)
 
                     if (sms_boxes and tweet_label > 0.5):
                         #extract urls
