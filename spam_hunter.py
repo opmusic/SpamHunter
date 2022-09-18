@@ -69,9 +69,10 @@ class SpamHunter:
                             tweet_label = self.tweetDetector.detect_tweet_text(tweet_text)
 
                     if (sms_boxes and tweet_label > 0.5):
-                        #extract urls
+                        #extract urls & sender
                         all_text = extract_all_text(imgpath)
                         urls = extract_url_from_text(all_text)
+                        sender = extract_sender_from_text(all_text)
 
                         #extract sms text
                         if (self.enable_google_api):
@@ -79,7 +80,11 @@ class SpamHunter:
                         else:
                             sms_text = extract_sms_text(imgpath, sms_boxes)
 
-                        info = {'image_name': imgname, 'image_path': imgpath, 'created_at': info['created_at'], 'sms_label': len(sms_boxes) != 0, 'sms_text': sms_text, 'urls': urls, 'tweet_label': tweet_label}
+                        #extract tagged ids
+                        tid = info['tweet_id']
+                        tagged_ids = self.tweet_info[tid]['mentions']
+
+                        info = {'image_name': imgname, 'image_path': imgpath, 'created_at': info['created_at'], 'sms_label': len(sms_boxes) != 0, 'sms_text': sms_text, 'urls': urls, 'sender': sender, 'mentions': tagged_ids, 'tweet_label': tweet_label}
                     else:
                         info = {'image_name': imgname, 'image_path': imgpath, 'created_at': info['created_at'], 'sms_label': len(sms_boxes) != 0, 'tweet_label': tweet_label}
                     f.write(json.dumps(info) + '\n')

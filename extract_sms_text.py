@@ -74,3 +74,32 @@ def extract_url_from_text(text):
             urls.add(t.full)
 
     return list(urls)
+
+def extract_sender_from_text(text):
+        tel_pattern1 = "^(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}"
+        tel_pattern2 = "[A-Z]{2}-[A-Z]{6}"
+        tel_pattern3 = "^([\d\-A-Za-z]*?)[>]"
+
+        #select first 6 lines
+        lines = text.split('\n')[:6]
+
+        for str in lines:
+            str = str.replace(' ','')
+            r1 = re.search(tel_pattern1, str)
+            if (r1):
+                tel = r1.group(0)
+                if (str.index(tel) < 5):
+                    return tel
+            r2 = re.search(tel_pattern2, str)
+            if (r2):
+                tel = r2.group(0)
+                if (str.index(tel) < 5):
+                    return tel
+
+            r3 = re.search(tel_pattern3, str)
+            if (r3):
+                tel = r3.group(1)
+                if (str.index(tel) < 5 and len(tel) > 5 and len(tel) < 11):
+                    return tel
+
+        return ''

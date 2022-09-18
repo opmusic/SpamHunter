@@ -124,8 +124,12 @@ class TweetParser:
                 for data in info['data']:
                     #month = parser.parse(data['created_at']).strftime('%Y-%m')
                     tweet_id = data['id']
+                    tagged_ids = []
+                    if ('mentions' in data['entities']):
+                        tagged_ids= [t['username'] for t in data['entities']['mentions']]
+
                     self.tweet_info[tweet_id] = {'tweet_id': tweet_id, 'created_at': data['created_at'], 'author_id': data['author_id'],
-                                                 'conversation_id': data['conversation_id'], 'source': data['source'],
+                                                 'conversation_id': data['conversation_id'], 'mentions': tagged_ids, 'source': data['source'],
                                                  'lang': data['lang'], 'text': data['text']}
 
     def parsr_user_info(self):
