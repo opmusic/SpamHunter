@@ -2,7 +2,7 @@
   This is our repo for the paper CCS'2022 -- Clues in Tweets: Twitter-Guided Discovery and Analysis of SMS Spam. Here is our dataset repository: https://github.com/opmusic/SpamHunter_dataset.
   
   ## How to install
-  You should install allennlp, nltk, tesseract manually to use the specified NLP models and OCR tool. The default python version is Python3.7.10. To use the allennlp models, the version of protobuf must be 3.20.x.
+  You should install allennlp, nltk, tesseract manually to use the specified NLP models and OCR tool. The default python version is Python3.7.10. To use the allennlp models, the version of protobuf must be 3.20.x. Note you need to install git lfs to download our models.
   * allennlp: https://github.com/allenai/allennlp
   * nltk: https://www.nltk.org/install.html
   * tesseract: https://tesseract-ocr.github.io/tessdoc/Installation.html
