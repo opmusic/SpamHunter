@@ -36,7 +36,7 @@ def extract_sms_text(imgpath, boxes):
         for i in range(n_boxes):
             (x, y, w, h) = (d['left'][i], d['top'][i], d['width'][i], d['height'][i])
             if is_overlap((x,y,w,h), box):
-                if (len(d['text'][i].strip().split()) > 6):
+                if (len(d['text'][i].strip().split()) > 0):
                     text += d['text'][i]
         all_text.append(text)
     return all_text
