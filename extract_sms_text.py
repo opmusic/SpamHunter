@@ -1,7 +1,7 @@
 import cv2
 import pytesseract
 import re
-import url_regex
+from urlextract import URLExtract
 
 from google_api import detect_sms_para
 
@@ -66,14 +66,10 @@ def extract_url_from_text(text):
     text = re.sub('([-/?&])\n',lambda x: x.group(1), text)
     text = re.sub('\n([-/.?&])', lambda x: x.group(1), text)
 
-    urls = set()
-    r = url_regex.UrlRegex(text)
-    for t in r.links:
-        check = url_regex.UrlRegex(t.full, strict=True, real_tld=True)
-        if check.detect == True:
-            urls.add(t.full)
+    extractor = URLExtract()
+    urls = extractor.findurls(text)
 
-    return list(urls)
+    return list(set(urls))
 
 def extract_sender_from_text(text):
         tel_pattern1 = "^(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}"
