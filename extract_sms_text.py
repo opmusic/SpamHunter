@@ -67,7 +67,7 @@ def extract_url_from_text(text):
     text = re.sub('\n([-/.?&])', lambda x: x.group(1), text)
 
     extractor = URLExtract()
-    urls = extractor.findurls(text)
+    urls = extractor.find_urls(text)
 
     return list(set(urls))
 
